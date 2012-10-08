@@ -1,0 +1,4 @@
+Slackbuild
+===========
+
+Slack
