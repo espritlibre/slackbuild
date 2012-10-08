@@ -1,0 +1,65 @@
+--- Makefile.am
++++ Makefile.am	2010-11-04 13:51:48.432426391 +0000
+@@ -71,6 +71,7 @@ EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP O
+ 	rfc2231.h rfc822.h rfc3676.h sha1.h sort.h mime.types VERSION prepare \
+ 	_regex.h OPS.MIX README.SECURITY remailer.c remailer.h browser.h \
+ 	mbyte.h lib.h extlib.c pgpewrap.c smime_keys.pl pgplib.h \
++	sidebar.h \
+ 	README.SSL smime.h group.h \
+ 	muttbug pgppacket.h depcomp ascii.h BEWARE PATCHES patchlist.sh \
+ 	ChangeLog mkchangelog.sh mutt_idna.h \
+--- Makefile.in
++++ Makefile.in	2010-11-04 13:54:41.299925329 +0000
+@@ -84,7 +84,7 @@ am_mutt_OBJECTS = addrbook.$(OBJEXT) ali
+ 	score.$(OBJEXT) send.$(OBJEXT) sendlib.$(OBJEXT) \
+ 	signal.$(OBJEXT) sort.$(OBJEXT) status.$(OBJEXT) \
+ 	system.$(OBJEXT) thread.$(OBJEXT) charset.$(OBJEXT) \
+-	history.$(OBJEXT) lib.$(OBJEXT) muttlib.$(OBJEXT) \
++	history.$(OBJEXT) lib.$(OBJEXT) sidebar.$(OBJEXT) muttlib.$(OBJEXT) \
+ 	editmsg.$(OBJEXT) mbyte.$(OBJEXT) url.$(OBJEXT) \
+ 	ascii.$(OBJEXT) crypt-mod.$(OBJEXT) safe_asprintf.$(OBJEXT)
+ am__objects_1 =
+@@ -359,6 +359,7 @@ mutt_SOURCES = \
+ 	rfc822.c rfc1524.c rfc2047.c rfc2231.c rfc3676.c \
+ 	score.c send.c sendlib.c signal.c sort.c \
+ 	status.c system.c thread.c charset.c history.c lib.c \
++	sidebar.c \
+ 	muttlib.c editmsg.c mbyte.c \
+ 	url.c ascii.c crypt-mod.c crypt-mod.h safe_asprintf.c
+ 
+@@ -389,6 +390,7 @@ EXTRA_DIST = COPYRIGHT GPL OPS OPS.PGP O
+ 	rfc2231.h rfc822.h rfc3676.h sha1.h sort.h mime.types VERSION prepare \
+ 	_regex.h OPS.MIX README.SECURITY remailer.c remailer.h browser.h \
+ 	mbyte.h lib.h extlib.c pgpewrap.c smime_keys.pl pgplib.h \
++	sidebar.h \
+ 	README.SSL smime.h group.h \
+ 	muttbug pgppacket.h depcomp ascii.h BEWARE PATCHES patchlist.sh \
+ 	ChangeLog mkchangelog.sh mutt_idna.h \
+--- buffy.c
++++ buffy.c	2010-11-04 13:57:02.163926692 +0000
+@@ -520,19 +520,22 @@ int mutt_buffy_check (int force)
+       {
+       case M_MBOX:
+       case M_MMDF:
+-	buffy_mbox_update (tmp);
++	if (option(OPTSIDEBAR))
++	  buffy_mbox_update (tmp);
+ 	if (buffy_mbox_hasnew (tmp, &sb) > 0)
+ 	  BuffyCount++;
+ 	break;
+ 
+       case M_MAILDIR:
+-	buffy_maildir_update (tmp);
++	if (option(OPTSIDEBAR))
++	  buffy_maildir_update (tmp);
+ 	if (buffy_maildir_hasnew (tmp) > 0)
+ 	  BuffyCount++;
+ 	break;
+ 
+       case M_MH:
+-	mh_buffy_update (tmp->path, &tmp->msgcount, &tmp->msg_unread, &tmp->msg_flagged);
++	if (option(OPTSIDEBAR))
++	  mh_buffy_update (tmp->path, &tmp->msgcount, &tmp->msg_unread, &tmp->msg_flagged);
+ 	if ((tmp->new = mh_buffy (tmp->path)) > 0)
+ 	  BuffyCount++;
+ 	break;
